@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input, ElementRef, OnInit } from '@angular/core';
 import { ModalService } from '../services/modal.service';
 import { CommonModule } from '@angular/common';
 
@@ -9,11 +9,18 @@ import { CommonModule } from '@angular/common';
   templateUrl: './modal.component.html',
   styleUrl: './modal.component.css'
 })
-export class ModalComponent {
-  constructor(public service:ModalService) {
-    console.log(this.service.isModalOpen());
+export class ModalComponent implements OnInit {
+  @Input()
+  modalId = '';
+  constructor(public service:ModalService, public el: ElementRef) {
   }
+
+  ngOnInit(): void {
+    // evitando que algum css pai interfira nos elementos do modal
+    document.body.appendChild(this.el.nativeElement);
+  }
+
   closeModal(): void {
-    this.service.toggleModal();
+    this.service.toggleModal(this.modalId);
   }
 }
