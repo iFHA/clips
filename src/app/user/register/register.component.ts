@@ -7,15 +7,24 @@ import {
   Validators
 } from '@angular/forms';
 import { InputComponent } from '../../input/input.component';
+import { AlertComponent } from '../../alert/alert.component';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, InputComponent],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    InputComponent,
+    AlertComponent
+  ],
   templateUrl: './register.component.html',
   styleUrl: './register.component.css'
 })
 export class RegisterComponent {
+  showAlert = false;
+  alertMsg = 'Por favor, aguarde, sua conta está sendo criada.';
+  alertColor = 'blue';
   registerForm = new FormGroup({
     name: new FormControl('', [
       Validators.required,
@@ -44,6 +53,8 @@ export class RegisterComponent {
     ])
   });
   register(): void {
-    console.log('register called');
+    this.showAlert = true;
+    this.alertMsg = 'Por favor, aguarde! sua conta está sendo criada.';
+    this.alertColor = 'blue';
   }
 }
