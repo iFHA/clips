@@ -1,0 +1,35 @@
+<input
+[formControl]="control"
+[type]="type"
+[placeholder]="placeholder"
+[mask]="format"
+class="block w-full py-1.5 px-3 text-gray-200 border border-gray-400 transition
+  duration-500 focus:outline-none rounded bg-transparent focus:border-indigo-400" />
+<ng-container *ngIf="control.touched && control.dirty">
+  <p *ngIf="control.errors?.['required']" class="text-red-400">
+    Campo Obrigatório!
+  </p>
+  <p *ngIf="control.errors?.['minlength']" class="text-red-400">
+    O valor informado possui
+    {{ control.errors?.['minlength']?.actualLength }}
+    caracteres, devem ser inseridos pelo menos
+    {{ control.errors?.['minlength']?.requiredLength }}
+    caracteres.
+  </p>
+  <p *ngIf="control.errors?.['min']" class="text-red-400">
+    O valor mínimo aceito é: {{ control.errors?.['min']?.min }}
+  </p>
+  <p *ngIf="control.errors?.['max']" class="text-red-400">
+    O valor máximo aceito é: {{ control.errors?.['max']?.max }}
+  </p>
+  <p *ngIf="control.errors?.['pattern']" class="text-red-400">
+    Senha deve conter pelo menos 8 caracteres com
+    pelo menos uma letra maiúscula, uma letra minúscula e um número.
+  </p>
+  <p *ngIf="control.errors?.['confirmPassword']" class="text-red-400">
+    E-mail inválido
+  </p>
+  <p *ngIf="control.errors?.['phoneNumber']" class="text-red-400">
+    E-mail inválido
+  </p>
+</ng-container>
