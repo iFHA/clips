@@ -9,6 +9,7 @@ import {
 import { AlertComponent } from '../../alert/alert.component';
 import { InputComponent } from '../../input/input.component';
 import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
+import { addDoc, collection, Firestore } from '@angular/fire/firestore';
 
 @Component({
   selector: 'app-register',
@@ -55,7 +56,10 @@ export class RegisterComponent {
     ])
   });
 
-  private auth:Auth = inject(Auth);
+  constructor (
+    private auth:Auth,
+    private db:Firestore
+  ) {}
 
   async register(): Promise<void> {
     this.inSubmission = true;
@@ -63,7 +67,7 @@ export class RegisterComponent {
     this.alertMsg = 'Por favor, aguarde! sua conta está sendo criada.';
     this.alertColor = 'blue';
 
-    const { email, password } = this.registerForm.value;
+    const { email, password, name, age, phoneNumber } = this.registerForm.value;
 
     try {
       if(this.registerForm.valid) {
@@ -72,8 +76,17 @@ export class RegisterComponent {
         );
         this.alertMsg = 'Conta criada com sucesso!';
         this.alertColor = 'green';
-        console.log(userCredentials);
       }
+
+      const usersCollection = collection(this.db, "users");
+
+      await addDoc(usersCollection, {
+        name,
+        email,
+        age,
+        phoneNumber
+      })
+
       this.inSubmission = false;
     } catch (e) {
       this.alertMsg = 'Erro ao criar a conta!';
