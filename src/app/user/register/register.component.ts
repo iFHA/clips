@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
-  ReactiveFormsModule,
-  FormGroup,
   FormControl,
+  FormGroup,
+  ReactiveFormsModule,
   Validators
 } from '@angular/forms';
-import { InputComponent } from '../../input/input.component';
 import { AlertComponent } from '../../alert/alert.component';
+import { InputComponent } from '../../input/input.component';
+import { Auth, createUserWithEmailAndPassword } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-register',
@@ -22,6 +23,7 @@ import { AlertComponent } from '../../alert/alert.component';
   styleUrl: './register.component.css'
 })
 export class RegisterComponent {
+  inSubmission = false;
   showAlert = false;
   alertMsg = 'Por favor, aguarde, sua conta está sendo criada.';
   alertColor = 'blue';
@@ -52,9 +54,33 @@ export class RegisterComponent {
       Validators.maxLength(11)
     ])
   });
-  register(): void {
+
+  private auth:Auth = inject(Auth);
+
+  async register(): Promise<void> {
+    this.inSubmission = true;
     this.showAlert = true;
     this.alertMsg = 'Por favor, aguarde! sua conta está sendo criada.';
     this.alertColor = 'blue';
+
+    const { email, password } = this.registerForm.value;
+
+    try {
+      if(this.registerForm.valid) {
+          const userCredentials = await createUserWithEmailAndPassword(
+            this.auth, email as string, password as string
+        );
+        this.alertMsg = 'Conta criada com sucesso!';
+        this.alertColor = 'green';
+        console.log(userCredentials);
+      }
+      this.inSubmission = false;
+    } catch (e) {
+      this.alertMsg = 'Erro ao criar a conta!';
+      this.alertColor = 'red';
+      console.error(e);
+      this.inSubmission = false;
+      return;
+    }
   }
 }
