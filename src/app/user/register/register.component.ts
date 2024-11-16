@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, Inject, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -11,6 +11,7 @@ import { InputComponent } from '../../input/input.component';
 import { AuthService } from '../../services/auth.service';
 import IUser from '../../models/user.model';
 import { RegisterValidators } from '../validators/register-validators';
+import { emailTakenValidator } from '../validators/email-taken';
 
 @Component({
   selector: 'app-register',
@@ -25,10 +26,12 @@ import { RegisterValidators } from '../validators/register-validators';
   styleUrl: './register.component.css'
 })
 export class RegisterComponent {
+  private auth:AuthService = inject(AuthService);
   inSubmission = false;
   showAlert = false;
   alertMsg = 'Por favor, aguarde, sua conta está sendo criada.';
   alertColor = 'blue';
+
   registerForm = new FormGroup({
     name: new FormControl<string>('', [
       Validators.required,
@@ -37,7 +40,7 @@ export class RegisterComponent {
     email: new FormControl<string>('', [
       Validators.required,
       Validators.email
-    ]),
+    ], [emailTakenValidator(this.auth)]),
     age: new FormControl<number|null>(null, [
       Validators.required,
       Validators.min(18),
@@ -57,9 +60,7 @@ export class RegisterComponent {
     ])
   }, [RegisterValidators.match('password', 'confirmPassword')]);
 
-  constructor (
-    private auth:AuthService
-  ) {}
+  constructor () {}
 
   async register(): Promise<void> {
     this.inSubmission = true;
