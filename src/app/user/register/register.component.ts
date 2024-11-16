@@ -10,6 +10,7 @@ import { AlertComponent } from '../../alert/alert.component';
 import { InputComponent } from '../../input/input.component';
 import { AuthService } from '../../services/auth.service';
 import IUser from '../../models/user.model';
+import { RegisterValidators } from '../validators/register-validators';
 
 @Component({
   selector: 'app-register',
@@ -54,7 +55,7 @@ export class RegisterComponent {
       Validators.minLength(10),
       Validators.maxLength(11)
     ])
-  });
+  }, [RegisterValidators.match('password', 'confirmPassword')]);
 
   constructor (
     private auth:AuthService
