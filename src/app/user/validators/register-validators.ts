@@ -6,16 +6,15 @@ export class RegisterValidators {
       const control = formGroup.get(controlName);
       const confirmControl = formGroup.get(confirmControlName);
       if(!control || !confirmControl) {
+        console.error("Form controls cannot be found in the form group");
         return {
           controlNotFound: true
         };
       }
-      if(control.value !== confirmControl.value) {
-        return {
-          noMatch: true
-        }
-      }
-      return null;
+      const valuesMatch = control.value === confirmControl.value;
+      const error = valuesMatch ? null : { noMatch: true };
+      confirmControl.setErrors(error);
+      return error;
     }
   }
 }
