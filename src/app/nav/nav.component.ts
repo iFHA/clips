@@ -17,8 +17,12 @@ export class NavComponent {
     public authService: AuthService
   ) {
   }
-  public openModal(event: MouseEvent) {
+  openModal(event: MouseEvent) {
     event.preventDefault();
     this.modalService.toggleModal('auth');
+  }
+  async logout(event: MouseEvent) {
+    event.preventDefault();
+    await this.authService.logout();
   }
 }

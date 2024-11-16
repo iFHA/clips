@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Auth, authState, createUserWithEmailAndPassword, signInWithCredential, signInWithEmailAndPassword, updateProfile } from '@angular/fire/auth';
+import { Auth, authState, createUserWithEmailAndPassword, signInWithCredential, signInWithEmailAndPassword, signOut, updateProfile } from '@angular/fire/auth';
 import { collection, CollectionReference, doc, Firestore, setDoc } from '@angular/fire/firestore';
 import { delay, map, Observable } from 'rxjs';
 import IUser from '../models/user.model';
@@ -55,5 +55,9 @@ export class AuthService {
   }
   async login(email:string, password:string): Promise<void> {
     await signInWithEmailAndPassword(this.auth, email, password);
+  }
+
+  async logout(): Promise<void> {
+    await signOut(this.auth);
   }
 }
