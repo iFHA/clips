@@ -3,6 +3,7 @@ import { Auth, authState, createUserWithEmailAndPassword, fetchSignInMethodsForE
 import { collection, CollectionReference, doc, Firestore, setDoc } from '@angular/fire/firestore';
 import { delay, from, map, Observable, of, tap } from 'rxjs';
 import IUser from '../models/user.model';
+import { Router } from '@angular/router';
 
 
 @Injectable({
@@ -15,8 +16,9 @@ export class AuthService {
   public isAuthenticatedWithDelay$: Observable<boolean>;
 
   constructor (
-    private auth:Auth,
-    private db:Firestore
+    private readonly auth:Auth,
+    private readonly db:Firestore,
+    private readonly router: Router
   ) {
     this.usersCollection = collection(this.db, "users") as CollectionReference<IUser, IUser>;
     this.isAuthenticated$ = authState(this.auth).pipe(
@@ -59,6 +61,7 @@ export class AuthService {
 
   async logout(): Promise<void> {
     await signOut(this.auth);
+    await this.router.navigateByUrl('/');
   }
 
   public emailExists(email:string): Observable<boolean> {

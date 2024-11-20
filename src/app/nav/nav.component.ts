@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { ModalService } from '../services/modal.service';
-import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { AuthService } from '../services/auth.service';
+import { ModalService } from '../services/modal.service';
 
 @Component({
   selector: 'app-nav',
@@ -14,8 +14,8 @@ import { RouterModule } from '@angular/router';
 export class NavComponent {
 
   constructor(
-    public modalService: ModalService,
-    public authService: AuthService
+    public readonly modalService: ModalService,
+    public readonly authService: AuthService
   ) {
   }
   openModal(event: MouseEvent) {
