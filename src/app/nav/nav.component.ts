@@ -2,12 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { ModalService } from '../services/modal.service';
 import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
-import { RouterLink, RouterLinkActive } from '@angular/router';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-nav',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterModule],
   templateUrl: './nav.component.html',
   styleUrl: './nav.component.css'
 })
