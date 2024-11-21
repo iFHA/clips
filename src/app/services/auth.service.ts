@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { Auth, authState, createUserWithEmailAndPassword, fetchSignInMethodsForEmail, signInWithCredential, signInWithEmailAndPassword, signOut, updateProfile } from '@angular/fire/auth';
 import { collection, CollectionReference, doc, Firestore, setDoc } from '@angular/fire/firestore';
-import { delay, from, map, Observable, of, tap } from 'rxjs';
+import { from, Observable, of } from 'rxjs';
+import { delay, map, filter, switchMap, tap } from 'rxjs/operators';
 import IUser from '../models/user.model';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 
 
 @Injectable({
@@ -14,11 +15,13 @@ export class AuthService {
   private usersCollection: CollectionReference<IUser, IUser>;
   public isAuthenticated$: Observable<boolean>;
   public isAuthenticatedWithDelay$: Observable<boolean>;
+  private redirect: boolean = false;
 
   constructor (
     private readonly auth:Auth,
     private readonly db:Firestore,
-    private readonly router: Router
+    private readonly router: Router,
+    private readonly route: ActivatedRoute
   ) {
     this.usersCollection = collection(this.db, "users") as CollectionReference<IUser, IUser>;
     this.isAuthenticated$ = authState(this.auth).pipe(
@@ -27,6 +30,19 @@ export class AuthService {
     this.isAuthenticatedWithDelay$ = this.isAuthenticated$.pipe(
       delay(1000)
     );
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+        map(() => {
+          let activeRoute = this.route;
+          while (activeRoute.firstChild) {
+            activeRoute = activeRoute.firstChild; // Navega para a rota ativa
+          }
+          return activeRoute;
+        }),
+      switchMap(route => route.data ?? of({}))
+    ).subscribe((data) => {
+      this.redirect = data['authOnly'] ?? false;
+    });
   }
 
   async createUser({
@@ -61,7 +77,9 @@ export class AuthService {
 
   async logout(): Promise<void> {
     await signOut(this.auth);
-    await this.router.navigateByUrl('/');
+    if(this.redirect) {
+      await this.router.navigateByUrl('/');
+    }
   }
 
   public emailExists(email:string): Observable<boolean> {
