@@ -17,7 +17,12 @@
             class="px-2"
             routerLink="videos/manage"
             routerLinkActive="text-indigo-400"
-            [routerLinkActiveOptions]="{exact: true}"
+            [routerLinkActiveOptions]="{
+              paths: 'exact',
+              queryParams: 'ignored',
+              matrixParams: 'ignored',
+              fragment: 'ignored'
+            }"
             [queryParams]="{sort: '1'}"
             >Manage</a>
           </li>

@@ -17,4 +17,8 @@ export const VIDEO_ROUTES: Routes = [
       authOnly: true
     }
   },
+  {
+    path: "manage-clips",// assumindo que antes havia esse caminho
+    redirectTo: "manage"
+  },
 ];
