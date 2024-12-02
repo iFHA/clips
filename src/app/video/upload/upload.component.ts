@@ -65,6 +65,9 @@ export class UploadComponent {
 
   uploadFile() {
     if(this.file){
+
+      this.uploadForm.disable();
+
       this.showAlert = true;
       this.alertColor = 'blue';
       this.inSubmission = true;
@@ -83,6 +86,7 @@ export class UploadComponent {
           this.alertColor = 'red';
           this.alertMsg = 'Erro ao realizar o upload!';
           this.inSubmission = false;
+          this.uploadForm.enable();
           console.error('Upload failed:', error);
         },
         async () => {
@@ -101,6 +105,7 @@ export class UploadComponent {
           this.alertColor = 'green';
           this.alertMsg = `Upload realizado com sucesso!`;
           this.inSubmission = false;
+          this.uploadForm.enable();
         }
       );
     }
