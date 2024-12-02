@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Auth, authState, createUserWithEmailAndPassword, fetchSignInMethodsForEmail, signInWithCredential, signInWithEmailAndPassword, signOut, updateProfile } from '@angular/fire/auth';
+import { Auth, authState, createUserWithEmailAndPassword, fetchSignInMethodsForEmail, signInWithCredential, signInWithEmailAndPassword, signOut, updateProfile, User } from '@angular/fire/auth';
 import { collection, CollectionReference, doc, Firestore, setDoc } from '@angular/fire/firestore';
 import { from, Observable, of } from 'rxjs';
 import { delay, map, filter, switchMap, tap } from 'rxjs/operators';
@@ -71,6 +71,7 @@ export class AuthService {
       displayName: name
     });
   }
+
   async login(email:string, password:string): Promise<void> {
     await signInWithEmailAndPassword(this.auth, email, password);
   }
@@ -86,5 +87,9 @@ export class AuthService {
     return from(fetchSignInMethodsForEmail(this.auth, email)).pipe(
       map(response => response.length > 0)
     );
+  }
+
+  public getCurrentUser(): User | null {
+    return this.auth.currentUser;
   }
 }
