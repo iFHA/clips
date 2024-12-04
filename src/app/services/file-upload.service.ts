@@ -46,7 +46,6 @@ export class FileUploadService {
     if (this.currentUploadTask) {
       this.currentUploadTask.cancel(); // Cancela o upload
       this.currentUploadTask = undefined;
-      console.log('upload cancelado');
     }
   }
 }

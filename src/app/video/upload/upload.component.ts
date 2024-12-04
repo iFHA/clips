@@ -10,6 +10,7 @@ import { AuthService } from '../../services/auth.service';
 import IClip from '../../models/clip.model';
 import { ClipService } from '../../services/clip.service';
 import { FileUploadService } from '../../services/file-upload.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-upload',
@@ -32,6 +33,7 @@ export class UploadComponent implements OnDestroy {
   alertMsg = 'Por favor, aguarde, o upload está sendo realizado.';
   alertColor = 'blue';
   inSubmission = false;
+  downloadURL = '';
 
   title = new FormControl<string>('', {
     validators:[
@@ -50,7 +52,8 @@ export class UploadComponent implements OnDestroy {
   constructor (
     private readonly auth: AuthService,
     private readonly clipService: ClipService,
-    private readonly fileUploadService: FileUploadService
+    private readonly fileUploadService: FileUploadService,
+    private readonly router: Router
   ) {}
 
   ngOnDestroy(): void {
@@ -87,20 +90,7 @@ export class UploadComponent implements OnDestroy {
         next: async upload => {
           const progress = upload.progress.toFixed(0);
           if(progress === '100') {
-            const clip: IClip = {
-              uid: this.auth.getCurrentUser()?.uid as string,
-              displayName: this.auth.getCurrentUser()?.displayName as string,
-              title: this.title.value,
-              fileName: `${clipFileName}.mp4`,
-              url: upload.downloadURL as string
-            }
-
-            await this.clipService.createClip(clip);
-
-            this.alertColor = 'green';
-            this.alertMsg = `Upload realizado com sucesso!`;
-            this.inSubmission = false;
-            this.uploadForm.enable();
+            this.downloadURL = upload.downloadURL as string;
           } else {
             this.alertMsg = `Upload sendo realizado, ${progress}% feito`;
           }
@@ -111,6 +101,26 @@ export class UploadComponent implements OnDestroy {
           this.inSubmission = false;
           this.uploadForm.enable();
           console.error('Upload failed:', error);
+        },
+        complete: async () => {
+          const clip: IClip = {
+            uid: this.auth.getCurrentUser()?.uid as string,
+            displayName: this.auth.getCurrentUser()?.displayName as string,
+            title: this.title.value,
+            fileName: `${clipFileName}.mp4`,
+            url: this.downloadURL as string
+          }
+
+          const docRef = await this.clipService.createClip(clip);
+
+          this.alertColor = 'green';
+          this.alertMsg = `Upload realizado com sucesso!`;
+          this.inSubmission = false;
+          this.uploadForm.enable();
+
+          setTimeout(()=>{
+            this.router.navigate(['clip', docRef.id]);
+          }, 1000);
         }
       });
     }

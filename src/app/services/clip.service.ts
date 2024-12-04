@@ -14,7 +14,9 @@ export class ClipService {
   }
 
   async createClip(data: IClip) {
-    const documentReference = await doc<IClip, IClip>(this.clipCollection, data.fileName);
+    const id = data.fileName.replace(/\.[^/.]+$/, '');
+    const documentReference = await doc<IClip, IClip>(this.clipCollection, id);
     await setDoc(documentReference, {...data});
+    return documentReference;
   }
 }
