@@ -4,13 +4,13 @@ import { EventBlockerDirective } from '../../directives/event-blocker.directive'
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { InputComponent } from '../../input/input.component';
 import { v4 as uuid } from 'uuid';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from '@firebase/storage';
 import { AlertComponent } from '../../alert/alert.component';
 import { AuthService } from '../../services/auth.service';
 import IClip from '../../models/clip.model';
 import { ClipService } from '../../services/clip.service';
 import { FileUploadService } from '../../services/file-upload.service';
 import { Router } from '@angular/router';
+import { serverTimestamp } from '@firebase/firestore';
 
 @Component({
   selector: 'app-upload',
@@ -108,7 +108,8 @@ export class UploadComponent implements OnDestroy {
             displayName: this.auth.getCurrentUser()?.displayName as string,
             title: this.title.value,
             fileName: `${clipFileName}.mp4`,
-            url: this.downloadURL as string
+            url: this.downloadURL as string,
+            timestamp: serverTimestamp()
           }
 
           const docRef = await this.clipService.createClip(clip);
