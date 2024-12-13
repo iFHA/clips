@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { collection, CollectionReference, doc, Firestore, getDocs, orderBy, OrderByDirection, query, setDoc, where } from '@angular/fire/firestore';
+import { collection, CollectionReference, doc, Firestore, getDocs, orderBy, OrderByDirection, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
 import IClip from '../models/clip.model';
 import { AuthService } from './auth.service';
 
@@ -46,5 +46,10 @@ export class ClipService {
       });
     }
     return videosList;
+  }
+  async updateClip(id: string, title: string) {
+    const documentReference = await doc<IClip, IClip>(this.clipCollection, id);
+    await updateDoc(documentReference, { title });
+    return documentReference;
   }
 }

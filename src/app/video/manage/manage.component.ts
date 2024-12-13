@@ -43,4 +43,11 @@ export class ManageComponent {
     this.activeClip = clip;
     this.modal.toggleModal('editClip');
   }
+
+  handleClipUpdate(clipUpdated: IClip) {
+    const clip = this.clips.find(clip=>clip.docId === clipUpdated.docId);
+    if(clip) {
+      clip.title = clipUpdated.title;
+    }
+  }
 }
