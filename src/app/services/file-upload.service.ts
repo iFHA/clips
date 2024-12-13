@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { getStorage, ref, uploadBytesResumable, getDownloadURL, UploadTask } from 'firebase/storage';
+import { getStorage, ref, uploadBytesResumable, getDownloadURL, UploadTask, deleteObject } from 'firebase/storage';
 import { Observable } from 'rxjs';
 
 export interface UploadProgress {
@@ -47,5 +47,12 @@ export class FileUploadService {
       this.currentUploadTask.cancel(); // Cancela o upload
       this.currentUploadTask = undefined;
     }
+  }
+
+  async deleteFile(path: string): Promise<void> {
+    const storage = getStorage();
+    const fileRef = ref(storage, path);
+
+    await deleteObject(fileRef);
   }
 }

@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
-import { collection, CollectionReference, doc, Firestore, getDocs, orderBy, OrderByDirection, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
+import { collection, CollectionReference, deleteDoc, doc, Firestore, getDocs, orderBy, OrderByDirection, query, setDoc, updateDoc, where } from '@angular/fire/firestore';
 import IClip from '../models/clip.model';
 import { AuthService } from './auth.service';
+import { FileUploadService } from './file-upload.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +13,8 @@ export class ClipService {
 
   constructor(
     private readonly db: Firestore,
-    private readonly auth: AuthService
+    private readonly auth: AuthService,
+    private readonly fileUploadService: FileUploadService
   ) {
     this.clipCollection = collection(this.db, "clips") as CollectionReference<IClip, IClip>;
   }
@@ -47,9 +49,16 @@ export class ClipService {
     }
     return videosList;
   }
+
   async updateClip(id: string, title: string) {
     const documentReference = await doc<IClip, IClip>(this.clipCollection, id);
     await updateDoc(documentReference, { title });
     return documentReference;
+  }
+
+  async deleteClip(clip: IClip) {
+    const documentReference = await doc<IClip, IClip>(this.clipCollection, clip.docId);
+    await this.fileUploadService.deleteFile(`clips/${clip.fileName}`);
+    await deleteDoc(documentReference);
   }
 }

@@ -1,3 +1,4 @@
+import { FileUploadService } from './../../services/file-upload.service';
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -49,5 +50,11 @@ export class ManageComponent {
     if(clip) {
       clip.title = clipUpdated.title;
     }
+  }
+
+  async deleteClip(event: Event, clip: IClip) {
+    event.preventDefault();
+    await this.clipService.deleteClip(clip);
+    this.clips = this.clips.filter(clipNotToDelete => clip.docId !== clipNotToDelete.docId);
   }
 }
