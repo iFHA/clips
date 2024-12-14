@@ -3,6 +3,8 @@ import { collection, CollectionReference, deleteDoc, doc, Firestore, getDocs, or
 import IClip from '../models/clip.model';
 import { AuthService } from './auth.service';
 import { FileUploadService } from './file-upload.service';
+import { BehaviorSubject, from } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -26,28 +28,36 @@ export class ClipService {
     return documentReference;
   }
 
-  async getUserClips(videoOrder: string) {
-    const videosList:Array<IClip> = [];
-    const userId = this.auth.getCurrentUser()?.uid;
-    if(userId) {
-      let order:OrderByDirection = 'desc';
-      if(videoOrder === '2') {
-        order = 'asc';
-      }
-      const userClipsQuery = query(
-        this.clipCollection,
-        where('uid', '==', userId),
-        orderBy('timestamp', order)
-      );
-      const userClipsQuerySnapshot = await getDocs(userClipsQuery);
-      userClipsQuerySnapshot.forEach(doc => {
-        videosList.push({
-          docId: doc.id,
-          ...doc.data()
-        })
-      });
-    }
-    return videosList;
+  getUserClips(sort$: BehaviorSubject<string>) {
+    return sort$.pipe(
+      map(
+        async videoOrder => {
+          const videosList:Array<IClip> = [];
+          const userId = this.auth.getCurrentUser()?.uid;
+          if(userId) {
+            let order:OrderByDirection = 'desc';
+            if(videoOrder === '2') {
+              order = 'asc';
+            }
+            const userClipsQuery = query(
+              this.clipCollection,
+              where('uid', '==', userId),
+              orderBy('timestamp', order)
+            );
+            const userClipsQuerySnapshot = await getDocs(userClipsQuery);
+            userClipsQuerySnapshot.forEach(doc => {
+              videosList.push({
+                docId: doc.id,
+                ...doc.data()
+              })
+            });
+          }
+          return videosList;
+        }
+      ),
+      mergeMap(promise => from(promise))
+    );
+
   }
 
   async updateClip(id: string, title: string) {

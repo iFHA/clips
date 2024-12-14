@@ -6,6 +6,7 @@ import { ClipService } from '../../services/clip.service';
 import IClip from '../../models/clip.model';
 import { EditComponent } from '../edit/edit.component';
 import { ModalService } from '../../services/modal.service';
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-manage',
@@ -18,6 +19,7 @@ export class ManageComponent {
   videoOrder = '1';
   clips:IClip[] = [];
   activeClip: IClip | null = null;
+  sort$: BehaviorSubject<string>;
 
   constructor(
     private router: Router,
@@ -25,9 +27,13 @@ export class ManageComponent {
     private readonly clipService: ClipService,
     private readonly modal: ModalService
   ) {
+    this.sort$ = new BehaviorSubject(this.videoOrder);
+    this.clipService.getUserClips(this.sort$).subscribe(clips => this.clips = clips);
+
     this.route.queryParamMap.subscribe(async paramMap => {
-      this.videoOrder = paramMap.get('sort') ?? '1';
-      this.clips = await this.clipService.getUserClips(this.videoOrder);
+      const order = paramMap.get('sort') ?? '1';
+      this.sort$.next(order);
+      // this.clips = await this.clipService.getUserClips(this.videoOrder);
     });
   }
 
